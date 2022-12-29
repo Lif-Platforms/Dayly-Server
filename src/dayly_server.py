@@ -5,7 +5,12 @@ import hashlib
 import secrets
 import json
 import os
+import yaml
  
+#Loads config
+with open("config.yml", 'r') as file:
+    configFile = yaml.safe_load(file)
+
 # create handler for each connection
  
 async def handler(websocket, path):
@@ -31,13 +36,16 @@ async def handler(websocket, path):
         # Sending the Hash
         password = hashed.hexdigest()
 
-        conn = sqlite3.connect('account.db')
+        #connecting to lif database
+        conn = sqlite3.connect(configFile['path-to-database'])
         c = conn.cursor()
 
+        #getting all accounts from database
         c.execute("SELECT * FROM accounts")
         items = c.fetchall()
 
-        foundAccount = False
+        #tells the server if the account givin was found
+        foundAccount = False 
 
         for item in items:
             print('seraching...')
@@ -55,34 +63,68 @@ async def handler(websocket, path):
             await websocket.send("SUCCESS")
             requestToken = await websocket.recv()
             if requestToken == "TOKEN?":
+                #Generates and sends login to9ken to client
                 token = secrets.token_urlsafe(16) 
                 await websocket.send(token) 
 
-                if not os.path.isfile("tokens.json", "a"):
-                    with open("Tokens.json") as file:
+                #checks if "tokens.json" exists and if not, creates the file
+                if not os.path.isfile("tokens.json"):
+                    with open("tokens.json", "a") as file:
+                        file.write("{}")
                         file.close()
 
-                def write_json(new_data, filename='data.json'):
-                    with open(filename,'r+') as file:
-                        # First we load existing data into a dict.
-                        file_data = json.load(file)
-                        # Join new_data with file_data inside emp_details
-                        file_data["emp_details"].append(new_data)
-                        # Sets file's current position at offset.
-                        file.seek(0)
-                        # convert back to json.
-                        json.dump(file_data, file, indent = 4)
-                
-                    # python object to be appended
-                y = {"emp_name":"Nikhil",}
-                    
-                write_json(y)
+                #opens json file for reading so it can be appended to later 
+                with open("tokens.json", "r") as file:
+                    #gets the content of the file
+                    content = file.read()
+                    #loads json data from file 
+                    tokens = json.loads(content)
+                    file.close() 
 
+                #appends new token to dict 
+                tokens.update({token:username})
+
+                #writes appended data to json file 
+                with open("tokens.json", "w") as file:
+                    #dumps the new dict into json
+                    dumpContent = json.dumps(tokens)
+                    #writes data to file
+                    file.write(dumpContent)
+                    file.close() 
         else:
             await websocket.send("INVALID_CREDENTIALS")
 
     if data == "TOKEN_LOGIN":
-        pass
+        print("token login")
+        #asks client for token
+        await websocket.send("TOKEN?")
+
+        #retrieves token from client
+        token = await websocket.recv()
+        print(token)
+
+        #opens token json file to check token provided by client
+        with open("tokens.json", "r") as file:
+            #reads content of file
+            content = file.read() 
+            #converts data into json
+            loadData = json.loads(content)
+
+
+            #checks if token exists 
+            if token in loadData:
+                await websocket.send("TOKEN_ACCEPTED")
+            else:
+                await websocket.send("INVALID_TOKEN")
+
+            #receives request for username associated with the token 
+            requestUsername = await websocket.recv() 
+
+            #checks if client requested username
+            if requestUsername == "USERNAME?":
+                #username is paired with the toke with the token being the key. to access the username you access the token key
+                await websocket.send(loadData[token])
+
 
     #reply = f"Data recieved as:  {data}!"
  
