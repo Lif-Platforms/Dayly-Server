@@ -1,0 +1,6 @@
+# Config files
+*.yml
+*.yaml
+
+# __pycache__ folders
+__pycache__/

@@ -2,25 +2,60 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, UploadFile, File, Form
 import yaml
+import json
 import utils.passwordHasher as passwordHasher
 import utils.lifAuthenticator as authenticator
 import utils.db_interface as database
 import uvicorn
 import os
 import uuid
+
+resources_folder = os.path.join(os.path.dirname(__file__), "resources")
+
+# Check config
+if not os.path.isfile("../config.yml"):
+    with open("config.yml", 'x') as config:
+        config.close()
+
+with open("../config.yml", "r") as config:
+    contents = config.read()
+    configurations = yaml.safe_load(contents)
+    config.close()
+
+# Ensure the configurations are not None
+if configurations == None:
+    configurations = {}
+
+# Open reference json file for config
+with open(f"{resources_folder}/config-template.json", "r") as json_file:
+    json_data = json_file.read()
+    default_config = json.loads(json_data)
+
+# Compare config with json data
+for option in default_config:
+    if not option in configurations:
+        configurations[option] = default_config[option]
+        print(f"Added '{option}' to config!")
+
+# Open config in write mode to write the updated config
+with open("../config.yml", "w") as config:
+    new_config = yaml.safe_dump(configurations)
+    config.write(new_config)
+    config.close()
+
+# Set database path
+database.set_db_path(configurations['path-to-database'])
+
+# Set auth url
+authenticator.set_auth_url(configurations['auth-server-url'])
  
 app = FastAPI()
 
 # Configure CORS
-origins = [
-    "http://localhost",
-    "http://localhost:3000",
-    "http://localhost:3001"
-]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=configurations['allow-origins'],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
