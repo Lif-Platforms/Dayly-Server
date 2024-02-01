@@ -1,6 +1,3 @@
-# Login Information for Lif Auth Server
-host: 127.0.0.1
-port: 9000
-
-# Tells the server the path to the logs folder 
-Path-To-Logs: ../src/logs
+allow-origins: []
+auth-server-url: https://api.auth.lifplatforms.com
+path-to-database: database
