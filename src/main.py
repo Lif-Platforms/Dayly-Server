@@ -42,19 +42,17 @@ with open("../config.yml", "w") as config:
     new_config = yaml.safe_dump(configurations)
     config.write(new_config)
     config.close()
+
+# Set database path
+database.set_db_path(configurations['path-to-database'])
  
 app = FastAPI()
 
 # Configure CORS
-origins = [
-    "http://localhost",
-    "http://localhost:3000",
-    "http://localhost:3001"
-]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=configurations['allow-origins'],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

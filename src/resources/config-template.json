@@ -1,5 +1,5 @@
 {
     "auth-server-url": "AUTH_URL_HERE",
     "allow-origins": [],
-    "path-to-database": "database"
+    "path-to-database": "DATABASE_PATH_HERE"
 }
