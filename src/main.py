@@ -43,6 +43,9 @@ with open("../config.yml", "w") as config:
     config.write(new_config)
     config.close()
 
+if not os.path.isdir("../user_content"):
+    os.mkdir("../user_content")
+
 # Set database path
 database.set_db_path(configurations['path-to-database'])
 

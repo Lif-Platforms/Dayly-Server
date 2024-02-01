@@ -4,3 +4,6 @@
 
 # __pycache__ folders
 __pycache__/
+
+# User content folder
+user_content/
