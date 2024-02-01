@@ -45,6 +45,9 @@ with open("../config.yml", "w") as config:
 
 # Set database path
 database.set_db_path(configurations['path-to-database'])
+
+# Set auth url
+authenticator.set_auth_url(configurations['auth-server-url'])
  
 app = FastAPI()
 
