@@ -43,6 +43,9 @@ with open("../config.yml", "w") as config:
     config.write(new_config)
     config.close()
 
+if not os.path.isdir("../user_content"):
+    os.mkdir("../user_content")
+
 # Set database path
 database.set_db_path(configurations['path-to-database'])
 
@@ -83,7 +86,7 @@ async def upload_image(username: str, token: str, file: UploadFile = File(), tit
 
         filename = file_id + file_extension
 
-        save_path = os.path.join("images/", filename)  # Specify the desired save path
+        save_path = os.path.join("user_content/", filename)  # Specify the desired save path
 
         # Save the uploaded file to disk
         with open(save_path, "wb") as f:
