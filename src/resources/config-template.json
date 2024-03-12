@@ -1,5 +1,10 @@
 {
     "auth-server-url": "AUTH_URL_HERE",
     "allow-origins": [],
-    "path-to-database": "DATABASE_PATH_HERE"
+    "mysql-host": "HOST HERE",
+    "mysql-port": "PORT HERE",
+    "mysql-user": "USER HERE",
+    "mysql-password": "PASSWORD HERE",
+    "mysql-database": "DATABASE HERE",
+    "mysql-ssl": "CERT PATH HERE"
 }

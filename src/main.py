@@ -13,11 +13,11 @@ import uuid
 resources_folder = os.path.join(os.path.dirname(__file__), "resources")
 
 # Check config
-if not os.path.isfile("../config.yml"):
+if not os.path.isfile("config.yml"):
     with open("config.yml", 'x') as config:
         config.close()
 
-with open("../config.yml", "r") as config:
+with open("config.yml", "r") as config:
     contents = config.read()
     configurations = yaml.safe_load(contents)
     config.close()
@@ -47,7 +47,7 @@ if not os.path.isdir("../user_content"):
     os.mkdir("../user_content")
 
 # Set database path
-database.set_db_path(configurations['path-to-database'])
+database.set_db_config(configurations)
 
 # Set auth url
 authenticator.set_auth_url(configurations['auth-server-url'])
